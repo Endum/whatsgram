@@ -1,6 +1,7 @@
 from whatsapp import WhatsappBOT
 from telegram import Update
 from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler
+from telegram.ext import Updater, MessageHandler, filters
 
 async def sendMessages(update, context, messages):
   for message_part in messages:
@@ -30,7 +31,7 @@ async def new_member(update, context):
   ]
   for member in update.message.new_chat_members:
     if member.username == 'whatsgram_bot':
-      await sendMessages(messages)
+      await sendMessages(update, context, messages)
 
   # Call for a whatsgram agent.
 
@@ -41,7 +42,7 @@ if __name__ == '__main__':
 
   start_handler = CommandHandler('start', start)
   application.add_handler(start_handler)
-  welcome_handler = MessageHandler(Filters.status_update.new_chat_members, new_member)
+  welcome_handler = MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, new_member)
   application.add_handler(welcome_handler)
   
   print("Bot up and running :)")
