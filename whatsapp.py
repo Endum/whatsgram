@@ -2,8 +2,8 @@ import wx
 import wx.html2
 
 class WhatsappBOT(wx.Dialog):
-  def __init__(self, *args, **kwds):
-    wx.Dialog.__init__(self, *args, **kwds)
+  def __init__(self):
+    wx.Dialog.__init__(self, None, -1)
     sizer = wx.BoxSizer(wx.VERTICAL) # GUI
     self.__browser = wx.html2.WebView.New(self)
     sizer.Add(self.__browser, 1, wx.EXPAND, 10) # GUI
@@ -49,7 +49,7 @@ class WhatsappBOT(wx.Dialog):
 
 if __name__ == '__main__':
   app = wx.App()
-  whats = WhatsappBOT(None, -1)
+  whats = WhatsappBOT()
   whats.loadWhatsapp()
   whats.Show() # GUI
   app.MainLoop()
