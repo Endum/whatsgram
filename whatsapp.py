@@ -9,7 +9,7 @@ class WhatsappBOT(wx.Dialog):
     sizer.Add(self.__browser, 1, wx.EXPAND, 10) # GUI
     self.Bind(wx.html2.EVT_WEBVIEW_LOADED, self.__onWebViewLoaded, self.__browser)
     self.__browser.AddScriptMessageHandler('toPyt')
-    self.Bind(wx.html2.EVT_WEBVIEW_SCRIPT_MESSAGE_RECEIVED, self.__onMessage, self.__browser)
+    #self.Bind(wx.html2.EVT_WEBVIEW_SCRIPT_MESSAGE_RECEIVED, self.__onMessage, self.__browser)
     self.SetSizer(sizer)  # GUI
     self.SetSize((900, 700)) # GUI
 
@@ -40,6 +40,9 @@ class WhatsappBOT(wx.Dialog):
     #self.js('selectChat("Io")')
     #print(self.js('getLastMessage()'))
     self.js('send("ciao", "bella")')
+
+  def bindTopic(self, callback):
+    self.Bind(wx.html2.EVT_WEBVIEW_SCRIPT_MESSAGE_RECEIVED, callback, self.__browser)
 
   def loadWhatsapp(self):
     self.__browser.LoadURL("https://web.whatsapp.com")
