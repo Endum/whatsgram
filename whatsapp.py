@@ -39,7 +39,7 @@ class WhatsappBOT(wx.Dialog):
     #print(self.js('getAllChats()'))
     #self.js('selectChat("Io")')
     #print(self.js('getLastMessage()'))
-    self.js('send("ciao", "bella")')
+    self.__js('send("ciao", "bella")')
 
   def bindTopic(self, callback):
     self.Bind(wx.html2.EVT_WEBVIEW_SCRIPT_MESSAGE_RECEIVED, callback, self.__browser)
