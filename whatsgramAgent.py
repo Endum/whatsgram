@@ -9,6 +9,7 @@ from telegram.ext import ApplicationBuilder
 import asyncio
 from whatsapp import WhatsappBOT
 import wx
+import nest_asyncio
 
 def sendToTelegram(message):
 	global tgram
@@ -19,19 +20,19 @@ def sendToTelegram(message):
           text=message
         )
 	)
+	print(tgram, args, message)
 
 def onMessage(message):
 	global tgram
 	split = message.GetString().split(':', 1)
 	topic = split[0]
 	message = split[1]
-	print(topic+'\n'+message)
 	sendToTelegram(topic)
 
 async def connectToTelegram(args):
 	global tgram
 	tgram = ApplicationBuilder().token(args.telegramToken).build()
-	#tgram.run_polling()
+	tgram.run_polling()
 
 async def connectToWhatsapp():
 	global wsapp
@@ -50,10 +51,11 @@ async def main():
 	args = parser.parse_args()
 	
 	# Telegram.
-	await asyncio.get_event_loop().create_task(connectToTelegram(args))
+	asyncio.get_event_loop().create_task(connectToTelegram(args))
 	
 	# Whatsapp.
 	await asyncio.get_event_loop().create_task(connectToWhatsapp())
 
 if __name__ == "__main__":
+	nest_asyncio.apply()
 	asyncio.get_event_loop().run_until_complete(main())
