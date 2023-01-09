@@ -6,10 +6,11 @@
 
 import argparse
 from telegram.ext import ApplicationBuilder
+import asyncio
 
-def connectToTelegram(args):
+async def connectToTelegram(args):
 	application = ApplicationBuilder().token(args.telegramToken).build()
-	application.bot.send_message(
+	await application.bot.send_message(
       chat_id=args.telegramChatID,
       text='Test'
     )
@@ -21,4 +22,6 @@ if __name__ == "__main__":
 	parser.add_argument('telegramChatID')
 	args = parser.parse_args()
 	
-	connectToTelegram(args)
+	asyncio.gather(connectToTelegram(args))
+	asyncio.get_event_loop().run_forever()
+	

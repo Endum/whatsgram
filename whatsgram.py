@@ -2,6 +2,7 @@ from whatsapp import WhatsappBOT
 from telegram import Update
 from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler
 from telegram.ext import Updater, MessageHandler, filters
+import subprocess
 
 async def sendMessages(update, context, messages):
   for message_part in messages:
@@ -34,11 +35,17 @@ async def new_member(update, context):
       await sendMessages(update, context, messages)
 
   # Call for a whatsgram agent.
+  global token
+  print(token + " " + str(update.effective_chat.id))
+  subprocess.call("python whatsgramAgent.py " + token + " " + str(update.effective_chat.id))
 
 if __name__ == '__main__':
   file = open('token.txt',mode='r')
-  application = ApplicationBuilder().token(file.read()).build()
+  global token
+  token = file.read()
   file.close()
+
+  application = ApplicationBuilder().token(token).build()
 
   start_handler = CommandHandler('start', start)
   application.add_handler(start_handler)
