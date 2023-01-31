@@ -6,35 +6,42 @@
 
 import argparse
 from telegram.ext import ApplicationBuilder
-import asyncio
 from whatsapp import WhatsappBOT
 import wx
-import nest_asyncio
+from queue import Queue
+from threading import Thread
+import asyncio
 
 def sendToTelegram(message):
 	global tgram
 	global args
-	asyncio.get_event_loop().create_task(
-        tgram.bot.send_message(
-          chat_id=args.telegramChatID,
-          text=message
-        )
-	)
+	global tloop
+	asyncio.run_coroutine_threadsafe(
+    tgram.bot.send_message(
+      chat_id=args.telegramChatID,
+      text=message
+    )
+	, tloop)
 	print(tgram, args, message)
 
-def onMessage(message):
+def onMessage(message):	# From whatsapp.
 	global tgram
 	split = message.GetString().split(':', 1)
 	topic = split[0]
 	message = split[1]
 	sendToTelegram(topic)
 
-async def connectToTelegram(args):
+def connectToTelegram():
+	global tloop
+	tloop = asyncio.new_event_loop()
+	asyncio.set_event_loop(tloop)
 	global tgram
+	global args
 	tgram = ApplicationBuilder().token(args.telegramToken).build()
 	tgram.run_polling()
 
-async def connectToWhatsapp():
+def connectToWhatsapp():
+	asyncio.set_event_loop(asyncio.new_event_loop())
 	global wsapp
 	app = wx.App()
 	wsapp = WhatsappBOT()
@@ -43,7 +50,7 @@ async def connectToWhatsapp():
 	wsapp.Show() # GUI
 	app.MainLoop()
 
-async def main():
+def main():
 	global args
 	parser = argparse.ArgumentParser()
 	parser.add_argument('telegramToken')
@@ -51,11 +58,12 @@ async def main():
 	args = parser.parse_args()
 	
 	# Telegram.
-	asyncio.get_event_loop().create_task(connectToTelegram(args))
+	Thread(target=connectToTelegram).start()
 	
 	# Whatsapp.
-	await asyncio.get_event_loop().create_task(connectToWhatsapp())
+	w = Thread(target=connectToWhatsapp)
+	w.start()
+	w.join()
 
 if __name__ == "__main__":
-	nest_asyncio.apply()
-	asyncio.get_event_loop().run_until_complete(main())
+	main()
