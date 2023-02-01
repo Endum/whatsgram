@@ -24,12 +24,15 @@ def sendToTelegram(message):
 	, tloop)
 	print(tgram, args, message)
 
-def onMessage(message):	# From whatsapp.
+def onWhatsappMessage(message):
 	global tgram
 	split = message.GetString().split(':', 1)
 	topic = split[0]
 	message = split[1]
-	sendToTelegram(topic)
+	if topic == "qrcode":
+		sendToTelegram("Everything's working!")
+	elif topic == "message":
+		sendToTelegram(message)
 
 def connectToTelegram():
 	global tloop
@@ -45,7 +48,7 @@ def connectToWhatsapp():
 	global wsapp
 	app = wx.App()
 	wsapp = WhatsappBOT()
-	wsapp.bindTopic(onMessage)
+	wsapp.bindTopic(onWhatsappMessage)
 	wsapp.loadWhatsapp()
 	wsapp.Show() # GUI
 	app.MainLoop()
